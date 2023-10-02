@@ -5,14 +5,38 @@ In other words, group the users by the number of tweets they posted in 2022 and 
 SQL:
 WITH HistogramTweets AS
 (
-SELECT user_id, COUNT(tweet_id) AS no_of_tweets
-FROM tweets
-WHERE EXTRACT(YEAR FROM tweet_date) = 2022
-GROUP BY user_id
+  SELECT user_id, COUNT(tweet_id) AS no_of_tweets
+  FROM tweets
+    WHERE EXTRACT(YEAR FROM tweet_date) = 2022
+    GROUP BY user_id
 )
+  SELECT 
+    no_of_tweets,
+    COUNT(user_id)
+  FROM HistogramTweets 
+    GROUP BY no_of_tweets;
+-------------------------------------------------------------------------------------------------------------------
+
+QUESTION 2:
+Assume you're given the table on user viewership categorised by device type where the three types are laptop, tablet, and phone.
+Write a query that calculates the total viewership for laptops and mobile devices where mobile is defined as the sum of tablet and phone viewership. Output the total viewership for laptops as laptop_reviews and the total viewership for mobile devices as mobile_views.
+
+SQL:
+SELECT
+  COUNT(CASE WHEN device_type = 'laptop' THEN 'laptop' END) AS laptop_views,
+  COUNT(CASE WHEN device_type IN ('tablet','phone') THEN 'mobile' END) AS mobile_views
+FROM viewership;
+-------------------------------------------------------------------------------------------------------------------
+
+QUESTION 3: 
+Given a table of Facebook posts, for each user who posted at least twice in 2021, write a query to find the number of days between each user’s first post of the year and last post of the year in the year 2021.
+Output the user and number of the days between each user's first and last post.
+
+SQL:
 SELECT 
-no_of_tweets,
-COUNT(user_id)
-FROM HistogramTweets 
-GROUP BY no_of_tweets
--------------------------------------------------------------------------------------------------------
+  user_id,
+  MAX(post_date::DATE)-MIN(post_date::DATE) AS day_difference
+FROM posts
+WHERE DATE_PART('Year', post_date) = 2021
+GROUP BY user_id
+HAVING COUNT(post_id) >=2
