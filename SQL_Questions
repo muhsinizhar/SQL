@@ -1,1 +1,79 @@
+QUESTION 1:
+Assume you're given a table Twitter tweet data, write a query to obtain a histogram of tweets posted per user in 2022.
+Output the tweet count per user as the bucket and the number of Twitter users who fall into that bucket.
+In other words, group the users by the number of tweets they posted in 2022 and count the number of users in each group.
 
+SQL:
+WITH histogram AS
+(
+SELECT 
+  user_id,
+  COUNT(tweet_id) AS tweet_count
+FROM tweets
+WHERE EXTRACT(Year FROM tweet_date) = 2022
+GROUP BY user_id
+)
+SELECT
+  tweet_count AS tweet_bucket,
+  COUNT(user_id) AS users_num
+FROM histogram
+GROUP BY 1;
+
+-------------------------------------------------------------------------------------------------------------------
+
+QUESTION 2:
+Given a table of candidates and their skills, you're tasked with finding the candidates best suited for an open Data Science job. 
+You want to find candidates who are proficient in Python, Tableau, and PostgreSQL.
+Write a query to list the candidates who possess all of the required skills for the job. Sort the output by candidate ID in ascending order.
+
+SQL:
+SELECT 
+  candidate_id
+FROM candidates
+WHERE skill IN ('Python', 'Tableau', 'PostgreSQL')
+GROUP BY candidate_id
+HAVING COUNT(skill) = 3;
+
+-------------------------------------------------------------------------------------------------------------------
+
+QUESTION 3:
+Assume you're given two tables containing data about Facebook Pages and their respective likes (as in "Like a Facebook Page").
+Write a query to return the IDs of the Facebook pages that have zero likes. 
+The output should be sorted in ascending order based on the page IDs
+
+SQL:
+SELECT 
+  p.page_id
+FROM pages AS p
+LEFT JOIN page_likes AS pl
+ON p.page_id = pl.page_id
+WHERE liked_date IS NULL
+GROUP BY 1;
+
+-------------------------------------------------------------------------------------------------------------------
+
+QUESTION 4:
+Assume you're given the table on user viewership categorised by device type where the three types are laptop, tablet, and phone.
+Write a query that calculates the total viewership for laptops and mobile devices where mobile is defined as the sum of tablet and phone viewership. 
+Output the total viewership for laptops as laptop_reviews and the total viewership for mobile devices as mobile_views.
+
+SQL:
+SELECT 
+  SUM(CASE WHEN device_type = 'laptop' THEN 1 ELSE 0 END) AS laptop_views,
+  SUM(CASE WHEN device_type IN ('tablet', 'phone') THEN 1 ELSE 0 END) AS mobile_views
+FROM viewership;
+
+-------------------------------------------------------------------------------------------------------------------
+
+QUESTION 5:
+Given a table of Facebook posts, for each user who posted at least twice in 2021, write a query to find the number of days between each user’s first post of the year and last post of the year in the year 2021. 
+Output the user and number of the days between each user's first and last post.
+
+SQL:
+SELECT 
+  user_id,
+  MAX(post_date::DATE) - MIN(post_date::DATE) AS days_between
+FROM posts
+WHERE DATE_PART('Year', post_date) = 2021
+GROUP BY user_id
+HAVING COUNT(post_date) > 1;
