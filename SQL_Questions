@@ -135,6 +135,8 @@ GROUP BY 1
 ORDER BY 2 DESC
 LIMIT 3;
 
+-------------------------------------------------------------------------------------------------------------------
+
 QUESTION 9:
 Assume you have an events table on Facebook app analytics. 
 Write a query to calculate the click-through rate (CTR) for the app in 2022 and round the results to 2 decimal places.
@@ -152,3 +154,22 @@ SELECT
 FROM events
 WHERE DATE_PART('Year', timestamp) = 2022
 GROUP BY 1;
+
+-------------------------------------------------------------------------------------------------------------------
+
+QUESTION 10:
+Assume you're given tables with information about TikTok user sign-ups and confirmations through email and text.
+New users on TikTok sign up using their email addresses, and upon sign-up, each user receives a text message confirmation to activate their account.
+Write a query to display the user IDs of those who did not confirm their sign-up on the first day, but confirmed on the second day.
+
+Definition:
+action_date refers to the date when users activated their accounts and confirmed their sign-up through text messages.
+
+SQL:
+SELECT 
+  user_id
+FROM emails AS e
+JOIN texts AS t
+ON e.email_id = t.email_id
+WHERE signup_action = 'Confirmed' AND
+signup_date + INTERVAL '1 day' = action_date;
